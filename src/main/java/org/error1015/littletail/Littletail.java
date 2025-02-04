@@ -16,8 +16,8 @@ import java.util.Set;
 public class Littletail {
     public static final String MODID = "littletail";
     // 创建Set集合过滤重复项
-    private static final Set<String> CACHE_PLAYERS = new HashSet<>();
-    private static final Set<String> CACHE_PLAYERS_UUID = new HashSet<>();
+    public static final Set<String> CACHE_PLAYERS = new HashSet<>();
+    public static final Set<String> CACHE_PLAYERS_UUID = new HashSet<>();
 
     public Littletail() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -34,9 +34,13 @@ public class Littletail {
             event.setMessage(Component.literal(rawMessage.substring(7)));
             return;
         }
+        var playerCatList = Config.getPlayerCatList();
+        var playerUUIDList = Config.getPlayerUUIDList();
+        // 如果两个列表的内容都是空的就直接退出
+        if (playerCatList.isEmpty() && playerUUIDList.isEmpty()) return;
         // 如果CACHE_PLAYERS为空 添加PlayerCatList的内容
-        if (CACHE_PLAYERS.isEmpty()) CACHE_PLAYERS.addAll(Config.getPlayerCatList());
-        if (CACHE_PLAYERS_UUID.isEmpty()) CACHE_PLAYERS_UUID.addAll(Config.getPlayerUUIDList());
+        if (CACHE_PLAYERS.isEmpty()) CACHE_PLAYERS.addAll(playerCatList);
+        if (CACHE_PLAYERS_UUID.isEmpty()) CACHE_PLAYERS_UUID.addAll(playerUUIDList);
         // 如果集合中包含了玩家的名字或者是UUID 又或者默认是生效的 那么他发送的消息将添加上小尾巴
         if (CACHE_PLAYERS.contains(player.getName().getString())
                 || CACHE_PLAYERS_UUID.contains(player.getUUID().toString())

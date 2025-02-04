@@ -40,7 +40,8 @@ public class Littletail {
         // 如果集合中包含了玩家的名字或者是UUID 又或者默认是生效的 那么他发送的消息将添加上小尾巴
         if (CACHE_PLAYERS.contains(player.getName().getString())
                 || CACHE_PLAYERS_UUID.contains(player.getUUID().toString())
-                || Config.isEnable()) {
+                || Config.isEnableToAllPlayer()
+        ) {
             Component finalMessage = event.getMessage().copy().append(Config.getTail());
             event.setMessage(finalMessage);
         }

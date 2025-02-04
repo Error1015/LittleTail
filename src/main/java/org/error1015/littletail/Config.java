@@ -10,8 +10,7 @@ import java.util.List;
 public class Config {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
-    private static final ForgeConfigSpec.BooleanValue enable = BUILDER.comment("if true, it will enable to all player.if false, it will enable to list player", "如果为true,小尾巴将对所有玩家生效,如果为false,将只会对玩家名单中生效")
-            .define("enable", true);
+    private static final ForgeConfigSpec.BooleanValue isEnableToAllPlayer = BUILDER.define("isEnableToAllPlayer", false);
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> playerCatList = BUILDER.comment("if player name in it, this player's chat will append tail.", "如果玩家名字在里面,这个玩家的发言将会附加小尾巴")
             .defineList("catPlayerNameList", Collections.emptyList(), o -> o instanceof String);
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> PlayerUUIDList = BUILDER.comment("if player's uuid in it, this player's chat will append tail.", "如果玩家的UUID在里面,这个玩家的发言将会附加小尾巴").defineList("catPlayerUUIDList", Collections.emptyList(), o -> o instanceof String);
@@ -32,7 +31,7 @@ public class Config {
         return tail.get();
     }
 
-    public static boolean isEnable() {
-        return enable.get();
+    public static boolean isEnableToAllPlayer() {
+        return isEnableToAllPlayer.get();
     }
 }

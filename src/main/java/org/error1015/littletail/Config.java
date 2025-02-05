@@ -16,13 +16,16 @@ public class Config {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
     private static final ForgeConfigSpec.BooleanValue isEnableToAllPlayer = BUILDER.define("isEnableToAllPlayer", false);
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> playerCatList = BUILDER.comment("if player name in it, this player's chat will append tail.", "如果玩家名字在里面,这个玩家的发言将会附加小尾巴").defineList("catPlayerNameList", Collections.emptyList(), o -> o instanceof String);
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> playerCatList = BUILDER.comment("if player's name in it, this player's chat will append tail.", "如果玩家名字在里面,这个玩家的发言将会附加小尾巴").defineList("catPlayerNameList", Collections.emptyList(), o -> o instanceof String);
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> PlayerUUIDList = BUILDER.comment("if player's uuid in it, this player's chat will append tail.", "如果玩家的UUID在里面,这个玩家的发言将会附加小尾巴").defineList("catPlayerUUIDList", Collections.emptyList(), o -> o instanceof String);
     private static final ForgeConfigSpec.ConfigValue<? extends String> tail = BUILDER.comment("tail pattern", "小尾巴样式").define("tail", "喵~", o -> o instanceof String);
+    private static final ForgeConfigSpec.BooleanValue isCaseSensitive = BUILDER.comment("玩家名字是否大小写敏感").define("isCaseSensitive", false);
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static List<? extends String> getPlayerCatList() {
+        // 返回转换小写的玩家名字列表
+        if (isCaseSensitive()) return playerCatList.get().stream().map(String::toLowerCase).toList();
         return playerCatList.get();
     }
 
@@ -36,6 +39,10 @@ public class Config {
 
     public static boolean isEnableToAllPlayer() {
         return isEnableToAllPlayer.get();
+    }
+
+    public static boolean isCaseSensitive() {
+        return isCaseSensitive.get();
     }
 
     @SubscribeEvent

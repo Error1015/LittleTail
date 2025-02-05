@@ -27,27 +27,47 @@ public class Littletail {
     public static void onServerChat(ServerChatEvent event) {
         Player player = event.getPlayer();
         String rawMessage = event.getRawText();
+        var playerCatList = Config.getPlayerCatList();
+        var playerUUIDList = Config.getPlayerUUIDList();
+
         // 如果信息开头是"/" 直接退出不做处理
         if (rawMessage.startsWith("/")) return;
-        // 如果信息开头是"notail" 把字符串切割前面6位 最后的内容就是信息 "notail a" -> "a"
+
+        // 如果信息开头是"notail" 返回初始内容
         if (rawMessage.startsWith("notail")) {
             event.setMessage(Component.literal(rawMessage.substring(7)));
             return;
         }
-        var playerCatList = Config.getPlayerCatList();
-        var playerUUIDList = Config.getPlayerUUIDList();
+
         // 如果两个列表的内容都是空的就直接退出
         if (playerCatList.isEmpty() && playerUUIDList.isEmpty()) return;
-        // 如果CACHE_PLAYERS为空 添加PlayerCatList的内容
+
+        // 如果Set集合内的内容为空 就把两个列表的内容添加到Set集合内
         if (CACHE_PLAYERS.isEmpty()) CACHE_PLAYERS.addAll(playerCatList);
         if (CACHE_PLAYERS_UUID.isEmpty()) CACHE_PLAYERS_UUID.addAll(playerUUIDList);
-        // 如果集合中包含了玩家的名字或者是UUID 又或者默认是生效的 那么他发送的消息将添加上小尾巴
-        if (CACHE_PLAYERS.contains(player.getName().getString())
-                || CACHE_PLAYERS_UUID.contains(player.getUUID().toString())
-                || Config.isEnableToAllPlayer()
-        ) {
+
+        // 判断是否区分玩家名字大小写
+        String playerName = getPlayerNameOnDifferentCase(player.getName().getString());
+        String playerUUID = player.getUUID().toString();
+
+        // 给玩家添加小尾巴 需要满足的条件有:
+        // 全局启用 玩家名在列表内 玩家UUID在列表内 满足其中一项即可
+        if (Config.isEnableToAllPlayer() || CACHE_PLAYERS.contains(playerName) || CACHE_PLAYERS_UUID.contains(playerUUID)) {
             Component finalMessage = event.getMessage().copy().append(Config.getTail());
             event.setMessage(finalMessage);
+        }
+    }
+
+    /**
+     * 判断玩家名字是否区分大小写 如果是 则返回原样 如果不是 则返回小写形式
+     * @param playerName 需要转换的玩家名字
+     * @return 操作完成后的玩家名
+     */
+    public static String getPlayerNameOnDifferentCase(String playerName) {
+        if (Config.isCaseSensitive()) {
+            return playerName;
+        } else {
+            return playerName.toLowerCase();
         }
     }
 }

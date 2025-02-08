@@ -7,7 +7,6 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import static org.error1015.littletail.Littletail.*;
 

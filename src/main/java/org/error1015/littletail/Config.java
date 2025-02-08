@@ -7,20 +7,22 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-import static org.error1015.littletail.Littletail.CACHE_PLAYERS;
-import static org.error1015.littletail.Littletail.CACHE_PLAYERS_UUID;
+import static org.error1015.littletail.Littletail.*;
 
 @Mod.EventBusSubscriber(modid = Littletail.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Config {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
-    private static final ForgeConfigSpec.BooleanValue isEnableToAllPlayer = BUILDER.define("isEnableToAllPlayer", false);
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> playerCatList = BUILDER.comment("if player's name in it, this player's chat will append tail.", "如果玩家名字在里面,这个玩家的发言将会附加小尾巴").defineList("catPlayerNameList", Collections.emptyList(), o -> o instanceof String);
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> PlayerUUIDList = BUILDER.comment("if player's uuid in it, this player's chat will append tail.", "如果玩家的UUID在里面,这个玩家的发言将会附加小尾巴").defineList("catPlayerUUIDList", Collections.emptyList(), o -> o instanceof String);
-    private static final ForgeConfigSpec.ConfigValue<? extends String> tail = BUILDER.comment("tail pattern", "小尾巴样式").define("tail", "喵~", o -> o instanceof String);
-    private static final ForgeConfigSpec.BooleanValue isCaseSensitive = BUILDER.comment("玩家名字是否大小写敏感").define("isCaseSensitive", false);
-
+    private static final ForgeConfigSpec.BooleanValue isEnableToAllPlayer = BUILDER.define("对所有玩家启用", true);
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> playerCatList = BUILDER.defineList("玩家名字白名单", Collections.emptyList(), o -> o instanceof String);
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> PlayerUUIDList = BUILDER.defineList("玩家UUID白名单", Collections.emptyList(), o -> o instanceof String);
+    private static final ForgeConfigSpec.ConfigValue<? extends String> tail = BUILDER.define("尾巴", "喵呜~", o -> o instanceof String);
+    private static final ForgeConfigSpec.BooleanValue isCaseSensitive = BUILDER.define("名称匹配大小写敏感", false);
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistName = BUILDER.comment().defineList("玩家名字黑名单", Collections.emptyList(), o -> o instanceof String);
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistUUID = BUILDER.comment().defineList("玩家名字白名单", Collections.emptyList(), o -> o instanceof String);
+    private static final ForgeConfigSpec.ConfigValue<String> notEnablePrefix = BUILDER.define("不添加小尾巴消息前缀", "notail");
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static List<? extends String> getPlayerCatList() {
@@ -45,21 +47,46 @@ public class Config {
         return isCaseSensitive.get();
     }
 
+    public static List<? extends String> getBlackListName() {
+        if (isCaseSensitive()) return blacklistName.get().stream().map(String::toLowerCase).toList();
+        return blacklistName.get();
+    }
+
+    public static List<? extends String> getBlackListUUID() {
+        return blacklistUUID.get();
+    }
+
+    public static String getNotEnablePrefix() {
+        return notEnablePrefix.get();
+    }
+
     @SubscribeEvent
     public static void onConfigEvent(ModConfigEvent.Reloading event) {
-        // 配置文件发生变更的时候刷新缓存
+        reload();
+    }
+
+    private static void reload() {
+        // 清理缓存
         CACHE_PLAYERS.clear();
         CACHE_PLAYERS_UUID.clear();
+        CACHE_BLACKLIST_NAME.clear();
+        CACHE_BLACKLIST_UUID.clear();
 
-        // 重新填充缓存
-        var playerCatList = Config.getPlayerCatList();
-        var playerUUIDList = Config.getPlayerUUIDList();
+        // 加载缓存
+        reload(getPlayerCatList(), CACHE_PLAYERS);
+        reload(getPlayerUUIDList(), CACHE_PLAYERS_UUID);
+        reload(getBlackListName(), CACHE_BLACKLIST_NAME);
+        reload(getBlackListUUID(), CACHE_BLACKLIST_UUID);
+    }
 
-        if (!playerCatList.isEmpty()) {
-            CACHE_PLAYERS.addAll(playerCatList);
-        }
-        if (!playerUUIDList.isEmpty()) {
-            CACHE_PLAYERS_UUID.addAll(playerUUIDList);
+    /**
+     * 如果列表内的内容不为空 就添加到缓存中
+     * @param list 列表
+     * @param set 缓存
+     */
+    public static void reload(List<? extends String> list, Set<String> set) {
+        if (!list.isEmpty()) {
+            set.addAll(list);
         }
     }
 }

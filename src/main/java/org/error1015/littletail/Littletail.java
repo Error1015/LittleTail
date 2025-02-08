@@ -38,20 +38,24 @@ public class Littletail {
         String playerUUID = player.getUUID().toString();
         String prefix = Config.getNotEnablePrefix();
 
-        // 如果列表的内容都是空的就直接退出
-        if (playerCatList.isEmpty() && playerUUIDList.isEmpty() && blackListName.isEmpty() && blackListUUID.isEmpty()) return;
-
         // 如果信息开头是"/" 直接退出不做处理
         if (rawMessage.startsWith("/")) return;
 
         // 如果信息开头符合前缀 返回初始内容
-        if (rawMessage.startsWith(prefix)) {
-            event.setMessage(Component.literal(rawMessage.substring(prefix.length() + 2)));
+        Component original = event.getMessage();
+        String messageString = original.getString();
+        if (messageString.startsWith(prefix)) {
+            int trimLength = prefix.length();
+            if (messageString.length() > trimLength && messageString.charAt(trimLength) == ' ')
+                trimLength += 1;
+            Component newComponent = Component.literal(messageString.substring(trimLength)).withStyle(original.getStyle());
+            event.setMessage(newComponent);
             return;
         }
 
         // 添加内容到缓存中
         addToTemp(playerCatList, playerUUIDList, blackListName, blackListUUID);
+
         // 如果玩家在黑名单内 就直接退出不做处理
         if (CACHE_BLACKLIST_NAME.contains(playerName) || CACHE_BLACKLIST_UUID.contains(playerUUID)) return;
 

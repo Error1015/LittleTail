@@ -14,54 +14,48 @@ import static org.error1015.littletail.Littletail.*;
 public class Config {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
-    private static final ForgeConfigSpec.BooleanValue isEnableToAllPlayer = BUILDER.define("对所有玩家启用", true);
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> playerCatList = BUILDER.defineList("玩家名字白名单", Collections.emptyList(), o -> o instanceof String);
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> playerUUIDList = BUILDER.defineList("玩家UUID白名单", Collections.emptyList(), o -> o instanceof String && ((String) o).matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"));
-    private static final ForgeConfigSpec.ConfigValue<? extends String> tail = BUILDER.define("尾巴", "喵~", o -> o instanceof String);
-    private static final ForgeConfigSpec.BooleanValue isCaseSensitive = BUILDER.define("名称匹配大小写敏感", false);
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistName = BUILDER.comment().defineList("玩家名字黑名单", Collections.emptyList(), o -> o instanceof String);
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistUUID = BUILDER.comment().defineList("玩家UUID黑名单", Collections.emptyList(), o -> o instanceof String);
-    private static final ForgeConfigSpec.ConfigValue<String> notEnablePrefix = BUILDER.define("不添加小尾巴消息前缀", "notail");
+    private static final ForgeConfigSpec.BooleanValue isEnableToAllPlayerConfig = BUILDER.define("对所有玩家启用", true);
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> whitePlayerNameConfig = BUILDER.defineList("玩家名字白名单", Collections.emptyList(), o -> o instanceof String);
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> whitePlayerUUIDConfig = BUILDER.defineList("玩家UUID白名单", Collections.emptyList(), o -> o instanceof String && ((String) o).matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"));
+    private static final ForgeConfigSpec.ConfigValue<? extends String> tailConfig = BUILDER.define("尾巴", "喵~", o -> o instanceof String);
+    private static final ForgeConfigSpec.BooleanValue isCaseSensitiveConfig = BUILDER.define("名称匹配大小写敏感", false);
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistNameConfig = BUILDER.comment().defineList("玩家名字黑名单", Collections.emptyList(), o -> o instanceof String);
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistUUIDConfig = BUILDER.comment().defineList("玩家UUID黑名单", Collections.emptyList(), o -> o instanceof String);
+    private static final ForgeConfigSpec.ConfigValue<String> notEnablePrefixConfig = BUILDER.define("不添加小尾巴消息前缀", "notail");
+    private static final ForgeConfigSpec.BooleanValue isOpenEggShellModeConfig = BUILDER.define("彩蛋模式", false);
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
-    public static List<? extends String> getPlayerCatList() {
-        // 返回转换小写的玩家名字列表
-        if (!isCaseSensitive()) return playerCatList.get().stream().map(String::toLowerCase).toList();
-        return playerCatList.get();
-    }
+    public static List<? extends String> whitePlayerName;
+    public static List<? extends String> whitePlayerUUID;
+    public static List<? extends String> blackPlayerName;
+    public static List<? extends String> blackPlayerUUID;
+    public static String tail;
+    public static boolean isEnableToAllPlayer;
+    public static boolean isCaseSensitive;
+    public static String notEnablePrefix;
+    public static boolean isOpenEggShellMode;
 
-    public static List<? extends String> getPlayerUUIDList() {
-        return playerUUIDList.get();
-    }
-
-    public static String getTail() {
-        return tail.get();
-    }
-
-    public static boolean isEnableToAllPlayer() {
-        return isEnableToAllPlayer.get();
-    }
-
-    public static boolean isCaseSensitive() {
-        return isCaseSensitive.get();
-    }
-
-    public static List<? extends String> getBlackListName() {
-        if (!isCaseSensitive()) return blacklistName.get().stream().map(String::toLowerCase).toList();
-        return blacklistName.get();
-    }
-
-    public static List<? extends String> getBlackListUUID() {
-        return blacklistUUID.get();
-    }
-
-    public static String getNotEnablePrefix() {
-        return notEnablePrefix.get();
+    @SubscribeEvent
+    public static void onLoad(ModConfigEvent.Loading event) {
+        whitePlayerUUID = whitePlayerUUIDConfig.get();
+        blackPlayerUUID = blacklistUUIDConfig.get();
+        tail = tailConfig.get();
+        isEnableToAllPlayer = isEnableToAllPlayerConfig.get();
+        isCaseSensitive = isCaseSensitiveConfig.get();
+        notEnablePrefix = notEnablePrefixConfig.get();
+        isOpenEggShellMode = isOpenEggShellModeConfig.get();
+        // 需要判断玩家名字是否大小写敏感 需要在后面执行
+        if (isCaseSensitive) {
+            whitePlayerName = whitePlayerNameConfig.get();
+            blackPlayerName = blacklistNameConfig.get();
+        } else {
+            whitePlayerName = whitePlayerNameConfig.get().stream().map(String::toLowerCase).toList();
+            blackPlayerName = blacklistNameConfig.get().stream().map(String::toLowerCase).toList();
+        }
     }
 
     @SubscribeEvent
     public static void onConfigEvent(ModConfigEvent.Reloading event) {
-        // 清理缓存
         if (event.getConfig().getSpec() == Config.SPEC) {
             CACHE_PLAYERS.clear();
             CACHE_PLAYERS_UUID.clear();
@@ -69,10 +63,9 @@ public class Config {
             CACHE_BLACKLIST_UUID.clear();
         }
 
-        // 加载缓存
-        CACHE_PLAYERS.addAll(getPlayerCatList());
-        CACHE_PLAYERS_UUID.addAll(getPlayerUUIDList());
-        CACHE_BLACKLIST_NAME.addAll(getBlackListName());
-        CACHE_BLACKLIST_UUID.addAll(getBlackListUUID());
+        CACHE_PLAYERS.addAll(whitePlayerName);
+        CACHE_PLAYERS_UUID.addAll(whitePlayerUUID);
+        CACHE_BLACKLIST_NAME.addAll(blackPlayerName);
+        CACHE_BLACKLIST_UUID.addAll(blackPlayerUUID);
     }
 }

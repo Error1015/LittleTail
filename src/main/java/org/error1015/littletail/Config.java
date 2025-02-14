@@ -16,7 +16,7 @@ public class Config {
 
     private static final ForgeConfigSpec.BooleanValue isEnableToAllPlayerConfig = BUILDER.define("对所有玩家启用", true);
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> whitePlayerNameConfig = BUILDER.defineList("玩家名字白名单", Collections.emptyList(), o -> o instanceof String);
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> whitePlayerUUIDConfig = BUILDER.defineList("玩家UUID白名单", Collections.emptyList(), o -> o instanceof String && ((String) o).matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"));
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> whitePlayerUUIDConfig = BUILDER.defineList("玩家UUID白名单", Collections.emptyList(), o -> o instanceof String);
     private static final ForgeConfigSpec.ConfigValue<? extends String> tailConfig = BUILDER.define("尾巴", "喵~", o -> o instanceof String);
     private static final ForgeConfigSpec.BooleanValue isCaseSensitiveConfig = BUILDER.define("名称匹配大小写敏感", false);
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistNameConfig = BUILDER.comment().defineList("玩家名字黑名单", Collections.emptyList(), o -> o instanceof String);

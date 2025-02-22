@@ -1,41 +1,25 @@
-package org.error1015.littletail;
+package org.error1015.littletail.events;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.forgespi.language.IModInfo;
+import org.error1015.littletail.Config;
+import org.error1015.littletail.LittleTail;
+import org.error1015.littletail.utils.TailUtils;
 
 import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
-@Mod(Littletail.MODID)
-@Mod.EventBusSubscriber(modid = Littletail.MODID)
-public class Littletail {
-    public static final String MODID = "littletail";
+@Mod.EventBusSubscriber(modid = LittleTail.MODID)
+public class TailHandler {
     // 创建Set集合过滤重复项
     public static final Set<String> CACHE_PLAYERS = new HashSet<>();
     public static final Set<String> CACHE_PLAYERS_UUID = new HashSet<>();
     public static final Set<String> CACHE_BLACKLIST_NAME = new HashSet<>();
     public static final Set<String> CACHE_BLACKLIST_UUID = new HashSet<>();
-
-    public Littletail() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
-        // 打开彩蛋模式的情况下检测Project Count的Mod
-        if (Config.isOpenEggShellMode) {
-            for (IModInfo mod : ModList.get().getMods()) {
-                String authors = mod.getConfig().getConfigElement("authors").isPresent() ? mod.getConfig().getConfigElement("authors").get().toString() : "Unknown";
-                if (authors.equals("Project Count")) {
-                    throw new RuntimeException("被Project Count的史蹦飞了: " + mod.getDisplayName() + "\n如果真的需要使用此Mod,请关闭聊天小尾巴的彩蛋模式");
-                }
-            }
-        }
-    }
 
     @SubscribeEvent
     public static void onServerChat(ServerChatEvent event) {
@@ -45,7 +29,7 @@ public class Littletail {
         var whitePlayerUUID = Config.whitePlayerUUID;
         var blackListName = Config.blackPlayerName;
         var blackListUUID = Config.blackPlayerUUID;
-        String playerName = getPlayerNameOnConfigValue(player.getName().getString());
+        String playerName = TailUtils.getPlayerNameOnConfigValue(player.getName().getString());
         String playerUUID = player.getUUID().toString();
         String prefix = Config.notEnablePrefix;
 
@@ -85,18 +69,5 @@ public class Littletail {
         if (CACHE_PLAYERS_UUID.isEmpty()) CACHE_PLAYERS_UUID.addAll(playerUUIDList);
         if (CACHE_BLACKLIST_NAME.isEmpty()) CACHE_BLACKLIST_NAME.addAll(blackListName);
         if (CACHE_BLACKLIST_UUID.isEmpty()) CACHE_BLACKLIST_UUID.addAll(blackListUUID);
-    }
-
-    /**
-     * 判断玩家名字是否区分大小写 如果是 则返回原样 如果不是 则返回小写形式
-     * @param playerName 需要转换的玩家名字
-     * @return 操作完成后的玩家名
-     */
-    public static String getPlayerNameOnConfigValue(String playerName) {
-        if (Config.isCaseSensitive) {
-            return playerName;
-        } else {
-            return playerName.toLowerCase();
-        }
     }
 }

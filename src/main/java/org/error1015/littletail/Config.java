@@ -21,7 +21,6 @@ public class Config {
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistNameConfig = BUILDER.comment().defineList("玩家名字黑名单", Collections.emptyList(), o -> o instanceof String);
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> blacklistUUIDConfig = BUILDER.comment().defineList("玩家UUID黑名单", Collections.emptyList(), o -> o instanceof String);
     private static final ForgeConfigSpec.ConfigValue<String> notEnablePrefixConfig = BUILDER.define("不添加小尾巴消息前缀", "notail");
-    private static final ForgeConfigSpec.BooleanValue isOpenEggShellModeConfig = BUILDER.define("彩蛋模式", false);
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static List<? extends String> whitePlayerName;
@@ -32,7 +31,6 @@ public class Config {
     public static boolean isEnableToAllPlayer;
     public static boolean isCaseSensitive;
     public static String notEnablePrefix;
-    public static boolean isOpenEggShellMode;
 
     @SubscribeEvent
     public static void onLoad(ModConfigEvent.Loading event) {
@@ -42,7 +40,6 @@ public class Config {
         isEnableToAllPlayer = isEnableToAllPlayerConfig.get();
         isCaseSensitive = isCaseSensitiveConfig.get();
         notEnablePrefix = notEnablePrefixConfig.get();
-        isOpenEggShellMode = isOpenEggShellModeConfig.get();
         // 需要判断玩家名字是否大小写敏感 需要在后面执行
         if (isCaseSensitive) {
             whitePlayerName = whitePlayerNameConfig.get();

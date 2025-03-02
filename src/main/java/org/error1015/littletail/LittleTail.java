@@ -11,7 +11,5 @@ public class LittleTail {
 
     public LittleTail() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
-        // 打开彩蛋模式的情况下检测Project Count的Mod
-        if (Config.isOpenEggShellMode) EggShell.checkAuthors("Project Count");
     }
 }

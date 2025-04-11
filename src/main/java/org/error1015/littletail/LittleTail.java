@@ -5,7 +5,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 
 @Mod(LittleTail.MODID)
-@Mod.EventBusSubscriber(modid = LittleTail.MODID)
 public class LittleTail {
     public static final String MODID = "littletail";
 

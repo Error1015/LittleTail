@@ -11,8 +11,8 @@ public class TailUtils {
     public static String getPlayerNameOnConfigValue(String playerName) {
         if (Config.isCaseSensitive) {
             return playerName;
-        } else {
-            return playerName.toLowerCase();
         }
+        return playerName.toLowerCase();
+
     }
 }

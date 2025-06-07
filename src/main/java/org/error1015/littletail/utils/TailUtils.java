@@ -18,8 +18,6 @@ public class TailUtils {
 
     /**
      * 判断object是不是String类型
-     * @param obj
-     * @return
      */
     public static boolean isString(Object obj) {
         return obj instanceof String;

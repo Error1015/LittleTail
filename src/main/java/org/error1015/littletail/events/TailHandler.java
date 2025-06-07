@@ -29,6 +29,7 @@ public class TailHandler {
         var whitePlayerUUID = Config.whitePlayerUUID;
         var blackListName = Config.blackPlayerName;
         var blackListUUID = Config.blackPlayerUUID;
+
         String playerName = TailUtils.getPlayerNameOnConfigValue(player.getName().getString());
         String playerUUID = player.getUUID().toString();
         String prefix = Config.notEnablePrefix;
@@ -65,10 +66,12 @@ public class TailHandler {
     /**
      * 如果Set集合内的内容为空 就把两个列表的内容添加到Set集合内
      */
-    private static void addToTemp(List<? extends String> playerCatList,
-                                  List<? extends String> playerUUIDList,
-                                  List<? extends String> blackListName,
-                                  List<? extends String> blackListUUID) {
+    private static void addToTemp(
+            List<? extends String> playerCatList,
+            List<? extends String> playerUUIDList,
+            List<? extends String> blackListName,
+            List<? extends String> blackListUUID
+    ) {
         if (CACHE_PLAYERS.isEmpty()) CACHE_PLAYERS.addAll(playerCatList);
         if (CACHE_PLAYERS_UUID.isEmpty()) CACHE_PLAYERS_UUID.addAll(playerUUIDList);
         if (CACHE_BLACKLIST_NAME.isEmpty()) CACHE_BLACKLIST_NAME.addAll(blackListName);

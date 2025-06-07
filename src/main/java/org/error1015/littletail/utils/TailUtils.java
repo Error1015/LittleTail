@@ -13,6 +13,5 @@ public class TailUtils {
             return playerName;
         }
         return playerName.toLowerCase();
-
     }
 }

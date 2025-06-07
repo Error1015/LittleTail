@@ -18,7 +18,6 @@ public class TailUtils {
 
     /**
      * 判断object是不是String类型
-     *
      * @param obj
      * @return
      */
